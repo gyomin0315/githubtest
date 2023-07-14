@@ -1,0 +1,32 @@
+name: Python Version Testing
+
+on: [push]
+
+jobs:
+  test-versions:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    
+    - name: Run tests and save output
+      run: python test_script.py > output_${{ matrix.python-version }}.txt
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: output_${{ matrix.python-version }}.txt
+    
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10]
